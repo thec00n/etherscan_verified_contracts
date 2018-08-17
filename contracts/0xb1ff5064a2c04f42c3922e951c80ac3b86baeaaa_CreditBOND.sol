@@ -1,0 +1,31 @@
+pragma solidity ^0.4.8;
+
+contract CreditBOND {
+    
+    uint public yearlyBlockCount = 2102400;
+    
+    function getBondMultiplier(uint _creditAmount, uint _locktime) constant returns (uint bondMultiplier){
+
+        if (_locktime &gt;= block.number + yearlyBlockCount * 2) { return 0; }
+        
+        uint answer = 0;
+        if (_locktime &gt; block.number){
+            if (_locktime &lt; 175200 + block.number){ // 1 month
+                answer = 1;
+            }else if(_locktime &lt; 525600 + block.number){ // 3 months
+                answer = 3;
+            }else if(_locktime &lt; 1051200 + block.number){ // 6 months
+                answer = 6;
+            }else if (_locktime &lt; 2102400 + block.number){ // 12 months
+                answer = 8;
+            }else{
+                answer = 12;
+            }
+        }
+        return answer;
+    }
+    
+    function getNewCoinsIssued(uint _lockedBalance, uint _blockDifference, uint _percentReward) constant returns(uint newCoinsIssued){
+        return (_percentReward*_lockedBalance*_blockDifference)/(100*yearlyBlockCount);
+    }
+}

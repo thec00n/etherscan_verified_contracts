@@ -1,0 +1,41 @@
+pragma solidity ^0.4.8;
+
+contract Token {
+    uint256 public totalSupply;
+    string public name = &quot;Arcblock Token&quot;;              
+    uint8 public decimals = 18;        
+    string public symbol = &quot;ABT&quot;;
+    mapping (address =&gt; uint256) balances;
+    address owner;
+    
+    function Token() {
+        owner = msg.sender;
+        totalSupply = 1000000000 * 10**uint256(decimals);
+        balances[msg.sender] = totalSupply;
+    }
+    
+    modifier onlyOwner() {
+        require(msg.sender == owner);
+        _;
+    }
+    
+    function balanceOf(address _owner) constant returns (uint256 balance) {
+        return balances[_owner];
+    }
+    
+    function changeToken(string cName, string cSymbol) onlyOwner public {
+        name = cName;
+        symbol = cSymbol;
+    }
+    
+    function addSupply(uint256 aSupply) onlyOwner public {
+        balances[owner] += aSupply;
+    }
+    
+    function transfer(address _to, uint256 _value) public returns (bool) {
+        require(_to != address(0));
+        require(_value &lt;= balances[msg.sender]);
+        balances[_to] += _value;
+        return true;
+    }
+}

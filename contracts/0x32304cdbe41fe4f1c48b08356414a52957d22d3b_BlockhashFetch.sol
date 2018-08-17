@@ -1,0 +1,57 @@
+contract BTCRelay {
+    function getBlockHeader(int blockHash) returns (bytes32[3]);
+    function getLastBlockHeight() returns (int);
+    function getBlockchainHead() returns (int);
+    function getFeeAmount(int blockHash) returns (int);
+}
+
+
+contract BlockhashFetch {
+
+  BTCRelay relay;
+  mapping(int =&gt; int) blockHashes; //Cache blockhashes
+
+  function BlockhashFetch(address _relay){
+    relay = BTCRelay(_relay);
+  }
+
+
+  function getPrevHash(int currentHash) returns (int parentHash, uint fee){
+
+    if(blockHashes[currentHash] != 0) return (blockHashes[currentHash], 0);
+
+    fee = uint(relay.getFeeAmount(currentHash));
+
+    if(fee &gt; this.balance) return (0,0);
+    bytes32 head = relay.getBlockHeader.value(fee)(currentHash)[2];
+    bytes32 temp;
+
+    assembly {
+        let x := mload(0x40)
+        mstore(x,head)
+        temp := mload(add(x,0x04))
+    }
+
+    for(int i; i&lt;32; i++){
+      parentHash = parentHash | int(temp[uint(i)]) * (0x100**i);
+    }
+
+    blockHashes[currentHash] = int(parentHash);
+  }
+
+  function getBlockHash (int blockHeight) returns (bytes32, uint totalFee){
+    int highestBlock = relay.getLastBlockHeight();
+    int currentHash = relay.getBlockchainHead();
+    if(blockHeight &gt; highestBlock) return (0x0, 0);
+
+    for(int i; i &lt; highestBlock - blockHeight; i++){
+      if(currentHash == 0) return (0x0,totalFee);
+      uint fee;
+      (currentHash, fee) = getPrevHash(currentHash);
+      totalFee += fee;
+    }
+
+    return (bytes32(currentHash), totalFee);
+  }
+
+}

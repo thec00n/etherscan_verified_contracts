@@ -1,0 +1,88 @@
+pragma solidity ^0.4.16;
+
+interface Token {
+    function transferFrom(address _from, address _to, uint256 _value) public returns (bool success);
+}
+
+contract ARWCrowdsale {
+    
+    Token public tokenReward;
+    address public creator;
+    address public owner =  0x94DEb6BA728d90fB02212EA6d370C1D634311246;
+
+    uint256 public price;
+    uint256 public startDate;
+    uint256 public endDate;
+
+    event FundTransfer(address backer, uint amount, bool isContribution);
+
+    function ARWCrowdsale() public {
+        creator = msg.sender;
+        startDate = 1521936000;
+        endDate = 1527289200;
+        price = 10000;
+        tokenReward = Token(0xEb0C680B2E42685bc836922d416DfD836704Ab09);
+    }
+
+    function setOwner(address _owner) public {
+        require(msg.sender == creator);
+        owner = _owner;      
+    }
+
+    function setCreator(address _creator) public {
+        require(msg.sender == creator);
+        creator = _creator;      
+    }
+
+    function setStartDate(uint256 _startDate) public {
+        require(msg.sender == creator);
+        startDate = _startDate;      
+    }
+
+    function setEndtDate(uint256 _endDate) public {
+        require(msg.sender == creator);
+        endDate = _endDate;      
+    }
+    
+    function setPrice(uint256 _price) public {
+        require(msg.sender == creator);
+        price = _price;      
+    }
+
+    function setToken(address _token) public {
+        require(msg.sender == creator);
+        tokenReward = Token(_token);      
+    }
+    
+    function kill() public {
+        require(msg.sender == creator);
+        selfdestruct(owner);
+    }
+
+    function () payable public {
+        require(msg.value &gt; 0);
+        require(now &gt; startDate);
+        require(now &lt; endDate);
+	    uint amount = msg.value * price;
+        uint _amount = amount / 10;
+
+        // period 1 : 50%
+        if(now &gt; 1521936000 &amp;&amp; now &lt; 1523746801) {
+            amount += _amount * 5;
+        }
+        
+        // period 2 : 30%
+        if(now &gt; 1523746800 &amp;&amp; now &lt; 1525129201) {
+            amount += _amount * 3;
+        }
+
+        // Pperiod 3 : 10%
+        if(now &gt; 1525129200 &amp;&amp; now &lt; 1527289200) {
+            amount += _amount;
+        }
+
+        tokenReward.transferFrom(owner, msg.sender, amount);
+        FundTransfer(msg.sender, amount, true);
+        owner.transfer(msg.value);
+    }
+}
